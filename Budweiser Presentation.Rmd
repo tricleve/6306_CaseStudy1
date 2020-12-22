@@ -1,0 +1,22 @@
+---
+title: "6306_CaseStudy1"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(maps)
+library(mapproj)
+
+```
+
+
+## Breweries in each state
+```{r}
+breweries <- read.csv("C:/Users/johnc45/OneDrive - Nationwide/Desktop/Working/SMU/6306 - Doing Data Science/Unit 8 and 9 Case Study 1/Breweries.csv")
+
+
+
+
+```
