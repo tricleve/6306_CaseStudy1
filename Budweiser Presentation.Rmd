@@ -14,12 +14,13 @@ library(usmap)
 
 
 ## Breweries in each state
-```{r}
+```{r Map Breweries in Each State}
 #load brewery data
 breweries <- read.csv("C:/Users/johnc45/OneDrive - Nationwide/Desktop/Working/SMU/6306 - Doing Data Science/Unit 8 and 9 Case Study 1/Breweries.csv")
 
 #Trim space in front of abbreviation
 breweries$abbr = str_trim(breweries$State)
+colnames(breweries)[1] = "Brewery_id"
 
 #Generate brewery count by state
 brewery_count_by_state = count(breweries,abbr)
@@ -31,6 +32,28 @@ colnames(brewery_count_by_state)[2] = "Breweries"
 plotbrew = merge(statepop,brewery_count_by_state,by = "abbr") %>% select(fips, Breweries)
 
 #Plot brewery count on the state map.  Includes Alaska, Hawaii and DC
-plot_usmap(data=plotbrew, values="Breweries", color = "red") + scale_fill_continuous(name = " Brewery Count", label = scales::comma) + theme(legend.position = "right")
+plot_usmap(data=plotbrew, values="Breweries", color = "black") + scale_fill_continuous(name = " Brewery Count", label = scales::comma) + theme(legend.position = "right")
+
+plot_usmap(data=plotbrew, values="Breweries", color = "black") + scale_fill_gradient(name = " Brewery Count", low = "yellow", high = "red") + theme(legend.position = "right")
+```
+
+## Merge beer data with brewries data
+```{r Merge Beer Data}
+beers <- read.csv("C:/Users/johnc45/OneDrive - Nationwide/Desktop/Working/SMU/6306 - Doing Data Science/Unit 8 and 9 Case Study 1/Beers.csv")
+
+comb_data = full_join(beers,breweries, by="Brewery_id")
+
+tail(comb_data, 6)
+head(comb_data, 6)
+
+```
+
+
+## Address Missing Values in each column
+```{r Address Combined Data Missing Values}
+beerclean = comb_data %>% filter (!is.na(ABV) & !is.na(IBU))
+
+beerclean[grep(max(beerclean$ABV),beerclean$ABV),]
+beerclean[grep(max(beerclean$IBU),beerclean$IBU),]
 
 ```
