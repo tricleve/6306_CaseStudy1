@@ -53,6 +53,33 @@ head(comb_data, 6)
 ```{r Address Combined Data Missing Values}
 beerclean = comb_data %>% filter (!is.na(ABV) & !is.na(IBU))
 
+```
+
+## Plot median ABV and IBU by state
+```{r Plot median ABV and IBU by state}
+
+
+##The two plots below display the median ABV and IBU 
+plotABV <- beerclean %>% group_by(abbr) %>% summarise(medianABV= median(ABV)) %>% arrange(desc(medianABV)) 
+plotABV$abbr <- factor(plotABV$abbr, levels = plotABV$abbr)
+
+plotABV %>% ggplot(aes(abbr,medianABV, fill=medianABV))+geom_bar(stat="identity", width=.5)+ coord_cartesian(ylim=c(.03,.07)) + scale_fill_gradient(low = "yellow", high= "red")+ labs(title="Ordered Bar Chart", subtitle="Median ABV by State") + theme(axis.text.x = element_text(angle=65, vjust=.3)) 
+
+plotIBU <- beerclean %>% group_by(abbr) %>% summarise(medianIBU= median(IBU)) %>% arrange(desc(medianIBU)) 
+plotIBU$abbr <- factor(plotIBU$abbr, levels = plotIBU$abbr)
+
+plotIBU %>% ggplot(aes(abbr,medianIBU, fill=medianIBU))+geom_bar(stat="identity", width=.5) + scale_fill_gradient(low = "yellow", high= "red")+ labs(title="Ordered Bar Chart", subtitle="Median IBU by State") + theme(axis.text.x = element_text(angle=65, vjust=.3)) 
+
+## The two plots below present the states alphabetically.
+beerclean %>% group_by(abbr) %>% summarise(medianABV= median(ABV))%>% ggplot(aes(abbr,medianABV, fill=medianABV))+geom_bar(stat="identity", width=.5)+ coord_cartesian(ylim=c(.03,.07)) + scale_fill_gradient(low = "yellow", high= "red")+ labs(title="Ordered Bar Chart", subtitle="Median ABV by State") + theme(axis.text.x = element_text(angle=65, vjust=.3)) 
+
+beerclean %>% group_by(abbr) %>% summarise(medianIBU= median(IBU)) %>% ggplot(aes(abbr,medianIBU, fill=medianIBU))+geom_bar(stat="identity", width=.5) + scale_fill_gradient(low = "yellow", high= "red")+ labs(title="Ordered Bar Chart", subtitle="Median IBU by State") + theme(axis.text.x = element_text(angle=65, vjust=.3)) 
+
+```
+
+## Display the state with highest ABV and IBU
+```{r Show states with highest ABV and IBU}
+
 beerclean[grep(max(beerclean$ABV),beerclean$ABV),]
 beerclean[grep(max(beerclean$IBU),beerclean$IBU),]
 
