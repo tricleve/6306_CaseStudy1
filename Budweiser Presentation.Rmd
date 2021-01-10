@@ -1,16 +1,51 @@
 ---
-title: "6306_CaseStudy1"
+title: "Case Study: Budweiser Beer and Brewery Analysis"
 output: html_document
+Author: Cleveland
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+###Organized for Loading all Required Libraries
+
 library(tidyverse)
 library(maps)
 library(mapproj)
 library(usmap)
-
+library(readr) #Read CSV
 ```
+
+## Raw Data Set Load and Description
+This is where we are loading the initial two data sets
+Breweries Data: Contains Data on Unique Breweries and their location
+Beers Data: Contains Data on the Beer provided by each Brewery
+The Data Link between the two data sets is the Brew_ID
+
+### Breweries
+Brew_ID(Int): Unique Identifier of the brewery (Primary Key)
+Name(Chr):    Name  of the brewery
+State(chr):   State of where the brewery is located in the US (2 Letter Code)
+City(chr):    City of where the brewery is located in the US
+
+### Beers
+Beer_ID(Int):     Unqiue Identifier of the specific beer (Primary Key)
+Brewery_ID(Int):  Identifies which brewery the beer is associated with (Used to Merge)
+ABV(num):         Alcohol by Volume of the beer
+IBU(int):         International Bitterness Units Rating of the beer
+Style(chr):       Style of the Beer
+Ounces(num):      Ounces of the Beer
+
+```{r Map Raw Data Load}
+breweries  <- read.csv("Breweries.csv", sep = ',', header = TRUE)
+beers      <- read.csv("Beers.csv", sep = ',', header = TRUE)
+```
+
+## Intial Exploratory Data Analysis
+```{r Map Intial EDA}
+head(beers)
+head(breweries)
+```
+
 
 
 ## Breweries in each state
