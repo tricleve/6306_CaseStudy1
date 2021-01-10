@@ -13,7 +13,7 @@ library(usmap)
 ```
 
 
-## Breweries in each state
+## Question 1: Breweries in each state
 ```{r Map Breweries in Each State}
 #load brewery data
 breweries <- read.csv("C:/Users/johnc45/OneDrive - Nationwide/Desktop/Working/SMU/6306 - Doing Data Science/Unit 8 and 9 Case Study 1/Breweries.csv")
@@ -37,7 +37,7 @@ plot_usmap(data=plotbrew, values="Breweries", color = "black") + scale_fill_cont
 plot_usmap(data=plotbrew, values="Breweries", color = "black") + scale_fill_gradient(name = " Brewery Count", low = "yellow", high = "red") + theme(legend.position = "right")
 ```
 
-## Merge beer data with brewries data
+## Question 2: Merge beer data with brewries data
 ```{r Merge Beer Data}
 beers <- read.csv("C:/Users/johnc45/OneDrive - Nationwide/Desktop/Working/SMU/6306 - Doing Data Science/Unit 8 and 9 Case Study 1/Beers.csv")
 
@@ -49,13 +49,13 @@ head(comb_data, 6)
 ```
 
 
-## Address Missing Values in each column
+## Question 3: Address Missing Values in each column
 ```{r Address Combined Data Missing Values}
 beerclean = comb_data %>% filter (!is.na(ABV) & !is.na(IBU))
 
 ```
 
-## Plot median ABV and IBU by state
+## Question 4: Plot median ABV and IBU by state
 ```{r Plot median ABV and IBU by state}
 
 
@@ -77,10 +77,38 @@ beerclean %>% group_by(abbr) %>% summarise(medianIBU= median(IBU)) %>% ggplot(ae
 
 ```
 
-## Display the state with highest ABV and IBU
+## Question 5: Display the state with highest ABV and IBU
 ```{r Show states with highest ABV and IBU}
 
 beerclean[grep(max(beerclean$ABV),beerclean$ABV),]
 beerclean[grep(max(beerclean$IBU),beerclean$IBU),]
+
+```
+
+## Question 6: Comment on summary stats and distribution of ABV variable
+``` {r Summary and distribution of ABV}
+
+beerclean %>% ggplot(aes(ABV)) + geom_histogram()
+summarise(beerclean, max=max(ABV), min=min(ABV), mean = mean(ABV), median = median(ABV), sd=sd(ABV))
+
+```
+## Question 7: Scatterplot of IBU and ABV
+``` {r Scatterplot IBU vs ABV}
+
+beerclean %>% ggplot(aes(ABV, IBU)) + geom_jitter(width=.01)
+
+beerclean %>% ggplot(aes(ABV, IBU)) + geom_point()
+```
+
+## Question 8: KNN 
+``` {r KNN to classify IPAs and Ales}
+
+sum(str_detect(beerclean$Style,"\\bIPA\\b"))
+sum(str_detect(beerclean$Style,"\\bIndia Pale Ale\\b"))
+
+beerclean %>% filter(str_detect(beerclean$Style, "\\bIndia Pale Ale\\b") | str_detect(beerclean$Style,"//bIPA//b"))
+
+beerIPA <- beerclean %>% filter(str_detect(Style,"\\bIPA\\b|\\bIndia Pale Ale\\b"))
+
 
 ```
