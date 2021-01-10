@@ -51,8 +51,11 @@ write.csv(x=beertrain, file = "Beertrain.csv")
 #KNN data filter
 IPA <- beerclean %>% filter(grepl("IPA",Style))
 ALE <- beerclean %>% filter(grepl("Ale", Style))
+LITE <-beerclean %>% filter(grepl("Pilsner", Style) | grepl("Lager", Style))
 IPAC <- IPA %>% mutate(Beerclass = "IPA")
 ALEC <- ALE %>% mutate(Beerclass = "ALE")
+LITEC <- LITE %>% mutate(Beerclass = "Pilsner\Lager")
+beertrain <- rbind(IPAC,ALEC,LITEC)
 beertrain
 
 #KNN train
@@ -79,6 +82,7 @@ ggplotly(p)
 
 
 #knn
+classifications = knn(train[,c(3,4)], test[,c(3,4)], train$Beerclass, prob = TRUE, k = 3)
 table(classifications,test$Beerclass)
 confusionMatrix(table(classifications,test$Beerclass))
 
