@@ -53,7 +53,6 @@ IPA <- beerclean %>% filter(grepl("IPA",Style))
 ALE <- beerclean %>% filter(grepl("Ale", Style))
 IPAC <- IPA %>% mutate(Beerclass = "IPA")
 ALEC <- ALE %>% mutate(Beerclass = "ALE")
-beertrain <- rbind(IPAC,ALEC)
 beertrain
 
 #KNN train
@@ -80,7 +79,6 @@ ggplotly(p)
 
 
 #knn
-classifications = knn(train[,c(3,4)], test[,c(3,4)], train$Beerclass, prob = TRUE, k = 5)
 table(classifications,test$Beerclass)
 confusionMatrix(table(classifications,test$Beerclass))
 
