@@ -9,6 +9,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ###Organized for Loading all Required Libraries
 
 library(tidyverse)
+library(dplyr)
 library(maps)
 library(mapproj)
 library(usmap)
@@ -57,7 +58,8 @@ ncol(beers)
 breweries$State = str_trim(breweries$State) #Remove Extra Space
 colnames(breweries)[1] = "Brewery_id"       #For Clarity
 colnames(beers)[5] = "Brewery_id"           #For Clarity
-beers$Ounces
+
+
 ```
 
 ## Question 2 Merge the two Data Set Together
@@ -68,15 +70,14 @@ comb_data = full_join(beers,breweries, by="Brewery_id")
 ## Breweries in each state
 ```{r Map Breweries in Each State}
 
-
 #Generate brewery count by state
 brewery_count_by_state = count(breweries,State)
 
 #Clean up column name to be more descriptive
-colnames(brewery_count_by_state)[2] = "Breweries"
+colnames(brewery_count_by_state)[2] = "breweries"
 
 #Merge/select brewery count with statepop (usmap data set) to get fips for plot.
-plotbrew = merge(statepop,brewery_count_by_state,by = "State") %>% select(fips, breweries)
+plotbrew <- merge(statepop,brewery_count_by_state,by.x = "abbr", by.y = "State") %>% select(fips, breweries)
 
 #Plot brewery count on the state map.  Includes Alaska, Hawaii and DC
 plot_usmap(data=plotbrew, values="Breweries", color = "black") + scale_fill_continuous(name = " Brewery Count", label = scales::comma) + theme(legend.position = "right")
