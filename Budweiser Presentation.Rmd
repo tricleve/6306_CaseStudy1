@@ -40,31 +40,43 @@ breweries  <- read.csv("Breweries.csv", sep = ',', header = TRUE)
 beers      <- read.csv("Beers.csv", sep = ',', header = TRUE)
 ```
 
-## Intial Exploratory Data Analysis
+## Intial Exploratory Data Analysis & Data Clean Up
 ```{r Map Intial EDA}
-head(beers)
 head(breweries)
+summary(breweries)
+nrow(breweries)
+ncol(breweries)
+
+head(beers)
+summary(beers)
+nrow(beers)
+ncol(beers)
+
+###Data Clean Up
+
+breweries$State = str_trim(breweries$State) #Remove Extra Space
+colnames(breweries)[1] = "Brewery_id"       #For Clarity
+colnames(beers)[5] = "Brewery_id"           #For Clarity
+beers$Ounces
 ```
 
-
+## Question 2 Merge the two Data Set Together
+```{r Merge two datasests}
+comb_data = full_join(beers,breweries, by="Brewery_id")
+```
 
 ## Breweries in each state
 ```{r Map Breweries in Each State}
-#load brewery data
-breweries <- read.csv("C:/Users/johnc45/OneDrive - Nationwide/Desktop/Working/SMU/6306 - Doing Data Science/Unit 8 and 9 Case Study 1/Breweries.csv")
 
-#Trim space in front of abbreviation
-breweries$abbr = str_trim(breweries$State)
-colnames(breweries)[1] = "Brewery_id"
 
 #Generate brewery count by state
-brewery_count_by_state = count(breweries,abbr)
+brewery_count_by_state = count(breweries,State)
 
 #Clean up column name to be more descriptive
 colnames(brewery_count_by_state)[2] = "Breweries"
 
 #Merge/select brewery count with statepop (usmap data set) to get fips for plot.
-plotbrew = merge(statepop,brewery_count_by_state,by = "abbr") %>% select(fips, Breweries)
+plotbrew = merge(statepop,brewery_count_by_state,by = "State") %>% select(fips, breweries)
 
 #Plot brewery count on the state map.  Includes Alaska, Hawaii and DC
 plot_usmap(data=plotbrew, values="Breweries", color = "black") + scale_fill_continuous(name = " Brewery Count", label = scales::comma) + theme(legend.position = "right")
@@ -95,20 +107,20 @@ beerclean = comb_data %>% filter (!is.na(ABV) & !is.na(IBU))
 
 
 ##The two plots below display the median ABV and IBU 
-plotABV <- beerclean %>% group_by(abbr) %>% summarise(medianABV= median(ABV)) %>% arrange(desc(medianABV)) 
-plotABV$abbr <- factor(plotABV$abbr, levels = plotABV$abbr)
+plotABV <- beerclean %>% group_by(State) %>% summarise(medianABV= median(ABV)) %>% arrange(desc(medianABV)) 
+plotABV$State <- factor(plotABV$State, levels = plotABV$State)
 
-plotABV %>% ggplot(aes(abbr,medianABV, fill=medianABV))+geom_bar(stat="identity", width=.5)+ coord_cartesian(ylim=c(.03,.07)) + scale_fill_gradient(low = "yellow", high= "red")+ labs(title="Ordered Bar Chart", subtitle="Median ABV by State") + theme(axis.text.x = element_text(angle=65, vjust=.3)) 
+plotABV %>% ggplot(aes(State,medianABV, fill=medianABV))+geom_bar(stat="identity", width=.5)+ coord_cartesian(ylim=c(.03,.07)) + scale_fill_gradient(low = "yellow", high= "red")+ labs(title="Ordered Bar Chart", subtitle="Median ABV by State") + theme(axis.text.x = element_text(angle=65, vjust=.3)) 
 
-plotIBU <- beerclean %>% group_by(abbr) %>% summarise(medianIBU= median(IBU)) %>% arrange(desc(medianIBU)) 
-plotIBU$abbr <- factor(plotIBU$abbr, levels = plotIBU$abbr)
+plotIBU <- beerclean %>% group_by(State) %>% summarise(medianIBU= median(IBU)) %>% arrange(desc(medianIBU)) 
+plotIBU$State <- factor(plotIBU$State, levels = plotIBU$State)
 
-plotIBU %>% ggplot(aes(abbr,medianIBU, fill=medianIBU))+geom_bar(stat="identity", width=.5) + scale_fill_gradient(low = "yellow", high= "red")+ labs(title="Ordered Bar Chart", subtitle="Median IBU by State") + theme(axis.text.x = element_text(angle=65, vjust=.3)) 
+plotIBU %>% ggplot(aes(State,medianIBU, fill=medianIBU))+geom_bar(stat="identity", width=.5) + scale_fill_gradient(low = "yellow", high= "red")+ labs(title="Ordered Bar Chart", subtitle="Median IBU by State") + theme(axis.text.x = element_text(angle=65, vjust=.3)) 
 
 ## The two plots below present the states alphabetically.
-beerclean %>% group_by(abbr) %>% summarise(medianABV= median(ABV))%>% ggplot(aes(abbr,medianABV, fill=medianABV))+geom_bar(stat="identity", width=.5)+ coord_cartesian(ylim=c(.03,.07)) + scale_fill_gradient(low = "yellow", high= "red")+ labs(title="Ordered Bar Chart", subtitle="Median ABV by State") + theme(axis.text.x = element_text(angle=65, vjust=.3)) 
+beerclean %>% group_by(State) %>% summarise(medianABV= median(ABV))%>% ggplot(aes(State,medianABV, fill=medianABV))+geom_bar(stat="identity", width=.5)+ coord_cartesian(ylim=c(.03,.07)) + scale_fill_gradient(low = "yellow", high= "red")+ labs(title="Ordered Bar Chart", subtitle="Median ABV by State") + theme(axis.text.x = element_text(angle=65, vjust=.3)) 
 
-beerclean %>% group_by(abbr) %>% summarise(medianIBU= median(IBU)) %>% ggplot(aes(abbr,medianIBU, fill=medianIBU))+geom_bar(stat="identity", width=.5) + scale_fill_gradient(low = "yellow", high= "red")+ labs(title="Ordered Bar Chart", subtitle="Median IBU by State") + theme(axis.text.x = element_text(angle=65, vjust=.3)) 
+beerclean %>% group_by(State) %>% summarise(medianIBU= median(IBU)) %>% ggplot(aes(State,medianIBU, fill=medianIBU))+geom_bar(stat="identity", width=.5) + scale_fill_gradient(low = "yellow", high= "red")+ labs(title="Ordered Bar Chart", subtitle="Median IBU by State") + theme(axis.text.x = element_text(angle=65, vjust=.3)) 
 
 ```
 
