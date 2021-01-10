@@ -10,10 +10,13 @@ knitr::opts_chunk$set(echo = TRUE)
 
 library(tidyverse)
 library(dplyr)
+library(ggplot2)
 library(maps)
 library(mapproj)
 library(usmap)
 library(readr) #Read CSV
+library(data.table)
+
 ```
 
 ## Raw Data Set Load and Description
@@ -59,7 +62,6 @@ breweries$State = str_trim(breweries$State) #Remove Extra Space
 colnames(breweries)[1] = "Brewery_id"       #For Clarity
 colnames(beers)[5] = "Brewery_id"           #For Clarity
 
-
 ```
 
 ## Question 2 Merge the two Data Set Together
@@ -67,22 +69,37 @@ colnames(beers)[5] = "Brewery_id"           #For Clarity
 comb_data = full_join(beers,breweries, by="Brewery_id")
 ```
 
-## Breweries in each state
+## Question 1 Breweries in each state
 ```{r Map Breweries in Each State}
 
 #Generate brewery count by state
 brewery_count_by_state = count(breweries,State)
-
-#Clean up column name to be more descriptive
-colnames(brewery_count_by_state)[2] = "breweries"
+colnames(brewery_count_by_state)[2] = "breweries_count"
 
 #Merge/select brewery count with statepop (usmap data set) to get fips for plot.
-plotbrew <- merge(statepop,brewery_count_by_state,by.x = "abbr", by.y = "State") %>% select(fips, breweries)
+plotbrew <- merge(statepop,brewery_count_by_state,by.x = "abbr", by.y = "State") %>% 
+  select(fips, breweries_count)
 
 #Plot brewery count on the state map.  Includes Alaska, Hawaii and DC
-plot_usmap(data=plotbrew, values="Breweries", color = "black") + scale_fill_continuous(name = " Brewery Count", label = scales::comma) + theme(legend.position = "right")
+## How to display East States?
+plot_usmap(data=plotbrew, values="breweries_count", color = "black", labels = TRUE) + 
+  scale_fill_gradient(name = " Brewery Count", low = "yellow", high = "red") + 
+  theme(legend.position = "right")
 
-plot_usmap(data=plotbrew, values="Breweries", color = "black") + scale_fill_gradient(name = " Brewery Count", low = "yellow", high = "red") + theme(legend.position = "right")
+#Plot brewery count bars - descreasing count order
+
+brewery_count_by_state_df <- as.data.frame(brewery_count_by_state)
+
+plot(
+  ggplot(data=brewery_count_by_state_df, aes(x=reorder(State, -breweries_count), y=breweries_count, fill= State)) +
+    geom_col() +
+    theme_bw() +
+    xlab("State") +
+    theme(axis.text.x = element_text(angle=90, hjust=1)) +
+    ggtitle("Distribution of Breweries by State") 
+)
+
+  
 ```
 
 ## Merge beer data with brewries data
