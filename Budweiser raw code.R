@@ -54,9 +54,9 @@ ALE <- beerclean %>% filter(grepl("Ale", Style))
 LITE <-beerclean %>% filter(grepl("Pilsner", Style) | grepl("Lager", Style))
 IPAC <- IPA %>% mutate(Beerclass = "IPA")
 ALEC <- ALE %>% mutate(Beerclass = "ALE")
-LITEC <- LITE %>% mutate(Beerclass = "Pilsner\Lager")
+LITEC <- LITE %>% mutate(Beerclass = "Pilsner/Lager")
 beertrain <- rbind(IPAC,ALEC,LITEC)
-beertrain
+head(beertrain)
 
 #KNN train
 set.seed(6)
